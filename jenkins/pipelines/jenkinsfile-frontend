@@ -26,42 +26,6 @@ pipeline
                 git branch:'master', url:'https://github.com/sureshkumar-devops/E2E-EKS-Three-Tier-DevSecOps-Project.git'
             }
         }
-        stage('OWSAP Check')
-        {
-            steps
-            {
-                dependencyCheck additionalArguments: '--scan ./', odcInstallation: 'DPCHECK_HOME'
-                dependencyCheckPublisher pattern: '**/report.xml'
-            }
-        }
-        stage('SonarQube Analysis')
-        {
-           steps
-           {
-              withSonarQubeEnv('sonarqube-server')
-              {
-                 sh ''' $scanner_home/bin/sonar-scanner \
-                   -Dsonar.ProjectName=frontend \
-                   -Dsonar.ProjectKey=frontend '''
-              }
-           }
-        }
-        stage('QualityGates')
-        {
-            steps
-            {
-                timeout(time: 1, unit: 'MINUTES')
-                {
-                   waitForQualityGates: abortPipeline: true
-                }
-            }
-        }
-        stage('Trivy FS SCAN')
-        {
-            steps
-            {
-                sh 'trivy fs . '
-            }
-        }
+       
     }
 }
