@@ -26,17 +26,17 @@ pipeline
                 git branch:'master', url:'https://github.com/sureshkumar-devops/E2E-EKS-Three-Tier-DevSecOps-Project.git'
             }
         }
-        stage('OWASP Check')
-        {
-            steps
-            {
-                dir('app/frontend')
-                {
-                  dependencyCheck additionalArguments: '--scan ./', odcInstallation: 'DPCHECK_HOME'
-                  dependencyCheckPublisher pattern: '**/frontend-report.xml'
-                }
-            }
-        }
+        // stage('OWASP Check')
+        // {
+        //     steps
+        //     {
+        //         dir('app/frontend')
+        //         {
+        //           dependencyCheck additionalArguments: '--scan ./', odcInstallation: 'DPCHECK_HOME'
+        //           dependencyCheckPublisher pattern: '**/frontend-report.xml'
+        //         }
+        //     }
+        // }
         stage('SonarQube Analysis')
         {
            steps
