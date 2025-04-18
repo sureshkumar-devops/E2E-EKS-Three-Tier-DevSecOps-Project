@@ -1,7 +1,6 @@
 pipeline
 {
-    agent any
-    triggers { pollSCM '* * * * *' }
+    agent any    
     tools
     {
         jdk 'JAVA_HOME'
@@ -26,6 +25,6 @@ pipeline
                 git branch:'master', url:'https://github.com/sureshkumar-devops/E2E-EKS-Three-Tier-DevSecOps-Project.git'
             }
         }
-       
+             
     }
 }
