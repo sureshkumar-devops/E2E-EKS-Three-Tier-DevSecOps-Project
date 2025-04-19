@@ -130,7 +130,7 @@ pipeline
         {
             steps
             {
-                build Job: "Three-Tier-BackEnd-Application"
+                build job: "Three-Tier-BackEnd-Application"
             }
         }
     }
