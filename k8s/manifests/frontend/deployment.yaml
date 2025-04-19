@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: three-tier
+  labels:
+    role: frontend
+    env: dev
+spec:
+ replicas: 1
+ strategy:
+   type: RollingUpdate
+   rollingUpdate:
+     maxUnavailable: 25%
+     maxSurge: 1  
+ selectors:
+   matchLabels:
+     role: frontend
+ template:
+   metadata:
+     labels:
+       role: frontend
+       env: dev
+   spec:
+     containers:
+       - name: frontend-container
+         image: frontend:63
+         imagePullPolicy: Always
+         env:
+          - name: REACT_APP_BACKEND_URL
+            value: "<lb-dns>/api/tasks"
+         ports:
+         - containerPort: 3000
+         
+         
+
