@@ -81,7 +81,7 @@ pipeline
         //         }
         //     }
         // }
-        stage('Build Docker Image & Tag')
+        stage('Build Docker Image & Tag & Push')
         {
             steps
             {
@@ -90,29 +90,13 @@ pipeline
                        withDockerRegistry(credentialsId: 'docker-credentials', toolName: 'DOCKER_HOME') 
                        { 
                             sh 'docker build -t frontend-image:${BUILD_NUMBER}  -f docker/dockerfiles/frontend/Dockerfile .'                            
+                            sh 'docker tag frontend-image:${BUILD_NUMBER} lehardocker/frontend-image:${BUILD_NUMBER}'
+                            sh 'docker push lehardocker/frontend-image:${BUILD_NUMBER}'
                        }
                     }           
             }
         }
-        stage('Docker Tag & Pushing') 
-        {
-            steps
-            {
-            
-                   script 
-                   {
-                       withDockerRegistry(credentialsId: 'docker-credentials', toolName: 'DOCKER_HOME') 
-                       { 
-                            sh 'docker tag lehardocker/frontend-image:${BUILD_NUMBER} frontend-image:${BUILD_NUMBER}'
-                            sh 'docker push frontend-image:${BUILD_NUMBER}'
-
-                            //sh 'docker build -t frontend-image:${BUILD_NUMBER}  -f docker/dockerfiles/frontend/Dockerfile .'
-                            //sh 'docker tag lehardocker/frontend-image:${BUILD_NUMBER} frontend-image:${BUILD_NUMBER}'
-                            //sh 'docker push frontend-image:${BUILD_NUMBER}'
-                       } 
-                   }    
-            }
-        }
+        
 
     }
 }
