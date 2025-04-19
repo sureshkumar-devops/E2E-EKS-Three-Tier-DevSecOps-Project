@@ -55,7 +55,8 @@ pipeline {
         //         }
         //     }
         // }
-        // stage('Trivy FS SCAN') {
+        // stage('Trivy FS SCAN') 
+        // {
         //     steps {
         //         dir('app/frontend') {
 
@@ -75,6 +76,41 @@ pipeline {
             steps {
                 sh 'docker tag frontend-image:${BUILD_NUMBER} lehardocker/frontend-image:${BUILD_NUMBER}'
                 sh 'docker push lehardocker/frontend-image:${BUILD_NUMBER}'
+            }
+        }
+        stage('Trivy Image SCAN') 
+        {
+            steps 
+            {
+                 dir('app/frontend') 
+                 {
+                    script
+                    {
+                        sh 'trivy image lehardocker/frontend-image${BUILD_NUMBER} .'
+                    }
+                }
+            }
+        }
+        stage('GitHub Login')
+        {
+          steps
+          {
+            git credentialsId: 'GitHub',url: 'https://github.com/sureshkumar-devops/E2E-EKS-Three-Tier-DevSecOps-Project.git'
+          }
+        }
+        stage('Update Deployment File')
+        {
+            environment
+            {
+                GIT_REPO_NAME = 'E2E-EKS-Three-Tier-DevSecOps-Project'
+                GIT_USER_NAME = 'sureshkumar-devops'
+            }
+            steps
+            {
+               dir('k8s/manifests/frontend')
+               {
+                 sh 'echo Deploymentfile '
+               }
             }
         }
     }
