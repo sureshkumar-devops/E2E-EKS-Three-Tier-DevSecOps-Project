@@ -84,7 +84,7 @@ pipeline {
             {
                 script
                 {
-                    sh 'trivy image lehardocker/frontend-image:${BUILD_NUMBER} .'
+                    sh 'trivy image lehardocker/frontend-image:${BUILD_NUMBER}'
                 }
             }
         }
