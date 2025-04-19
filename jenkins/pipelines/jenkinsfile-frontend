@@ -68,30 +68,30 @@ pipeline
         //         }               
         //     }
         // }
-        stage('Trivy FS SCAN')
-        {
-            steps
-            {
-                dir('app/frontend')
-                { 
-                    script
-                    {
-                        sh 'trivy fs . '    
-                    }
-                }
-            }
-        }
+        // stage('Trivy FS SCAN')
+        // {
+        //     steps
+        //     {
+        //         dir('app/frontend')
+        //         { 
+        //             script
+        //             {
+        //                 sh 'trivy fs . '    
+        //             }
+        //         }
+        //     }
+        // }
         stage('Build Docker Image & Tag')
         {
             steps
             {
-                dir('app/frontend')
+                //dir('app/frontend')
                 {
                     script
                     {
                        withDockerRegistry(credentialsId: 'docker-credentials', toolName: 'DOCKER_HOME') 
                        { 
-                            sh '''docker build -t frontend-image:latest  -f docker/dockerfiles/frontend/Dockerfile .'''
+                            sh '''docker build -t frontend-image:latest  -f /app/docker/dockerfiles/frontend/Dockerfile .'''
                             //sh 'docker tag lehardocker/frontend-img:v1 frontend-img:latest'
                        }
                     }
