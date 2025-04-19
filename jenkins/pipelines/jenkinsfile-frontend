@@ -86,7 +86,7 @@ pipeline
             steps
             {
                 //dir('app/frontend')
-                {
+                //{
                     script
                     {
                        withDockerRegistry(credentialsId: 'docker-credentials', toolName: 'DOCKER_HOME') 
@@ -95,7 +95,7 @@ pipeline
                             //sh 'docker tag lehardocker/frontend-img:v1 frontend-img:latest'
                        }
                     }
-                }
+               // }
             }
         }
         
