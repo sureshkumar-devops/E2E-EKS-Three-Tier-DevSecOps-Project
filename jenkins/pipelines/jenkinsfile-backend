@@ -1,0 +1,134 @@
+pipeline 
+{
+    agent any    
+    tools {
+        jdk 'JAVA_HOME'
+    }
+    environment {
+        scanner_home = tool 'sonarqube-scanner'
+    }
+    stages
+    {
+        stage('Clean Workspace')
+        {
+            steps {
+                cleanWs()
+            }
+        }
+        stage('Git Checkout')
+        {
+            steps {
+                git branch: 'master',
+                    url: 'https://github.com/sureshkumar-devops/E2E-EKS-Three-Tier-DevSecOps-Project.git'
+            }
+        }        
+        // stage('OWASP Check') {
+        //     steps {
+        //         dir('app/backend') {
+        //             dependencyCheck additionalArguments: '--scan ./', odcInstallation: 'DPCHECK_HOME'
+        //             dependencyCheckPublisher pattern: '**/backend-report.xml'
+        //         }
+        //     }
+        // }
+        // stage('SonarQube Analysis') {
+        //     steps {
+        //         dir('app/backend') {
+        //             withSonarQubeEnv('sonarqube-server') {
+        //                 sh ''' $scanner_home/bin/sonar-scanner \
+        //                     -Dsonar.ProjectName=backend \
+        //                     -Dsonar.ProjectKey=backend '''
+        //             }
+        //         }
+        //     }
+        // }
+        // stage('QualityGates') {
+        //     steps {
+        //         dir('app/backend') {
+        //             script {
+        //                 timeout(time: 1, unit: 'MINUTES') {
+        //                     waitForQualityGate abortPipeline: false
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
+        // stage('Trivy FS SCAN') 
+        // {
+        //   steps 
+        //   {
+        //     dir('app/backend') 
+        //     {
+        //       sh 'trivy fs .'      
+        //     }
+        //    }
+        //}
+        stage('Build Docker Image ')
+        {
+            steps{
+                script{
+                    withDockerRegistry(credentialsId: 'docker-credentials', toolName: 'DOCKER_HOME')
+                    {
+                      sh 'docker build -t backend-image:${BUILD_NUMBER} -f docker/dockerfiles/backend/Dockerfile .'
+                    }
+                }
+            }
+        }
+        stage('Push & Tag Docker Image') 
+        {
+            steps {
+                sh 'docker tag backend-image:${BUILD_NUMBER} lehardocker/backend-image:${BUILD_NUMBER}'
+                sh 'docker push lehardocker/backend-image:${BUILD_NUMBER}'
+            }
+        }
+        stage('Trivy Image SCAN') 
+        {
+            steps 
+            {
+              sh 'trivy image lehardocker/backend-image:${BUILD_NUMBER} > trivyimage-${BUILD_NUMBER}.txt'
+            }
+        }
+        stage('GitHub Login')
+        {
+          steps
+          {
+            git credentialsId: 'GitHub',url: 'https://github.com/sureshkumar-devops/E2E-EKS-Three-Tier-DevSecOps-Project.git'
+          }
+        }
+        stage('Update Deployment File') 
+        {
+            environment 
+            {
+                GIT_REPO_NAME = 'E2E-EKS-Three-Tier-DevSecOps-Project'
+                GIT_USER_NAME = 'sureshkumar-devops'
+            }
+            steps 
+            {
+                dir('k8s/manifests/backend/') 
+                {
+                    withCredentials([string(credentialsId: 'githubtoken', variable: 'GH_TOKEN')]) 
+                    {
+                        echo 'Updating Deployment File'
+                         sh '''
+                            git config --global user.name 'sureshkumar-devops'
+                            git config --global user.email 'suresh.ak47@gmail.com'
+                            echo "Build Number: ${BUILD_NUMBER}"
+
+                            # Extract the current image tag from the deployment file
+                            imageTag=$(grep -oP '(?<=backend:)[^ ]+' deployment.yaml)
+                            echo "Current Image Tag: $imageTag"
+                            
+                            echo "############## Deploying new version of 3-tier app ##############"
+                            # Replace the old image tag with the new build number
+                            sed -i "s/${imageTag}/${BUILD_NUMBER}/g" deployment.yaml
+
+                            # Commit and push the updated deployment file
+                            git add deployment.yaml
+                            git commit -m "Update deployment image to version ${BUILD_NUMBER}"
+                            git push https://${GH_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:master
+                        '''
+                    }
+                }   
+            }
+        }
+    }
+}
