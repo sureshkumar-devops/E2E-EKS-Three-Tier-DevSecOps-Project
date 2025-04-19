@@ -85,19 +85,38 @@ pipeline
         {
             steps
             {
-                //dir('app/frontend')
-                //{
+                dir('app/frontend')
+                {
                     script
                     {
                        withDockerRegistry(credentialsId: 'docker-credentials', toolName: 'DOCKER_HOME') 
                        { 
-                            sh '''docker build -t frontend-image:latest  -f docker/dockerfiles/frontend/Dockerfile .'''
-                            //sh 'docker tag lehardocker/frontend-img:v1 frontend-img:latest'
+                            sh 'docker build -t frontend-image  -f docker/dockerfiles/frontend/Dockerfile .'
+                            //sh 'docker tag lehardocker/frontend-image:v1 frontend-image:latest'
+                            //sh 'docker push frontend-image:latest'
                        }
                     }
-               // }
+                }
             }
         }
-        
+        stage('Docker Tag & Pushing') 
+        {
+            steps
+            {
+                dir('app/frontend')
+                {
+                   script 
+                   {
+                       withDockerRegistry(credentialsId: 'docker-credentials', toolName: 'DOCKER_HOME') 
+                       { 
+                            //sh 'docker build -t frontend-image:${BUILD_NUMBER}  -f docker/dockerfiles/frontend/Dockerfile .'
+                            sh 'docker tag lehardocker/frontend-image:${BUILD_NUMBER} frontend-image:${BUILD_NUMBER}'
+                            sh 'docker push frontend-image:${BUILD_NUMBER}'
+                       } 
+                   }
+                }
+            }            
+        }
+
     }
 }
