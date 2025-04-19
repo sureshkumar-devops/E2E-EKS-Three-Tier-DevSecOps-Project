@@ -24,7 +24,7 @@ spec:
    spec:
      containers:
        - name: frontend-container
-         image: frontend:139
+         image: frontend:140
          imagePullPolicy: Always
          env:
           - name: REACT_APP_BACKEND_URL
