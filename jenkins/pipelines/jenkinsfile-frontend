@@ -82,10 +82,7 @@ pipeline {
         {
             steps 
             {
-                script
-                {
-                    sh 'trivy image lehardocker/frontend-image:${BUILD_NUMBER}'
-                }
+              sh 'trivy image lehardocker/frontend-image:${BUILD_NUMBER} > trivyimage-${BUILD_NUMBER}.txt'
             }
         }
         stage('GitHub Login')
@@ -106,7 +103,17 @@ pipeline {
             {
                dir('k8s/manifests/frontend')
                {
-                 sh 'echo Deploymentfile '
+                withCredentials([string(credentialsId: 'githubtoken', variable: 'githubtoken')])
+                {
+                 echo 'Update Deployment File'
+                 sh ''' 
+                    git config --global user.name  'sureshkumar-devops'
+                    git config --global user.email 'suresh.ak47@gmail.com'
+                    BUILD_NUMBER=${BUILD_NUMBER}
+                    echo BUILD_NUMBER
+
+                 '''
+                }
                }
             }
         }
