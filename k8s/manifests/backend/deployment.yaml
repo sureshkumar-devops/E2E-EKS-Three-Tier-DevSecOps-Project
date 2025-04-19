@@ -24,7 +24,7 @@ spec:
    spec:
      containers:
        - name: backend-container
-         image: backend:100
+         image: backend:1
          imagePullPolicy: Always
          env:
           - name: MONGO_CONN_STR
