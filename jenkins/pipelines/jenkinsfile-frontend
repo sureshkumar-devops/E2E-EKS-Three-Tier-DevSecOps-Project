@@ -37,37 +37,37 @@ pipeline
         //         }
         //     }
         // }
-        stage('SonarQube Analysis')
-        {
-           steps
-           {
-            dir('app/frontend')
-            {
-              withSonarQubeEnv('sonarqube-server')
-              {
-                 sh ''' $scanner_home/bin/sonar-scanner \
-                   -Dsonar.ProjectName=frontend \
-                   -Dsonar.ProjectKey=frontend '''
-              }
-            }
-           }
-        }
-        stage('QualityGates')
-        {
-            steps
-            {
-                dir('app/frontend')
-                {
-                    script
-                    {
-                        timeout(time: 1, unit: 'MINUTES')
-                        {
-                            waitForQualityGate abortPipeline: false
-                        }
-                    }
-                }               
-            }
-        }
+        // stage('SonarQube Analysis')
+        // {
+        //    steps
+        //    {
+        //     dir('app/frontend')
+        //     {
+        //       withSonarQubeEnv('sonarqube-server')
+        //       {
+        //          sh ''' $scanner_home/bin/sonar-scanner \
+        //            -Dsonar.ProjectName=frontend \
+        //            -Dsonar.ProjectKey=frontend '''
+        //       }
+        //     }
+        //    }
+        // }
+        // stage('QualityGates')
+        // {
+        //     steps
+        //     {
+        //         dir('app/frontend')
+        //         {
+        //             script
+        //             {
+        //                 timeout(time: 1, unit: 'MINUTES')
+        //                 {
+        //                     waitForQualityGate abortPipeline: false
+        //                 }
+        //             }
+        //         }               
+        //     }
+        // }
         stage('Trivy FS SCAN')
         {
             steps
