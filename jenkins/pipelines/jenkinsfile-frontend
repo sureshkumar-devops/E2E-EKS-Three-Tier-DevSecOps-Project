@@ -9,18 +9,16 @@ pipeline {
     environment {
         scanner_home = tool 'sonarqube-scanner'
     }
-    stages {
-        def buildDockerImage() {
-            withDockerRegistry(credentialsId: 'docker-credentials', toolName: 'DOCKER_HOME') {
-                sh 'docker build -t frontend-image:${BUILD_NUMBER} -f docker/dockerfiles/frontend/Dockerfile .'
-            }
-        }
-        stage('Clean Workspace') {
+    stages
+    {
+        stage('Clean Workspace')
+        {
             steps {
                 cleanWs()
             }
         }
-        stage('Git Checkout') {
+        stage('Git Checkout')
+        {
             steps {
                 git branch: 'master',
                     url: 'https://github.com/sureshkumar-devops/E2E-EKS-Three-Tier-DevSecOps-Project.git'
@@ -61,18 +59,23 @@ pipeline {
         //     steps {
         //         dir('app/frontend') {
 
-        stage('Build Docker Image & Tag') {
-            steps {
-                script {
-                    buildDockerImage()
+        stage('Build Docker Image ')
+        {
+            steps{
+                script{
+                    withDockerRegistry(credentialsId: 'docker-credentials', toolName: 'DOCKER_HOME')
+                    {
+                      sh 'docker build -t frontend-image:${BUILD_NUMBER} -f docker/dockerfiles/frontend/Dockerfile .'
+                    }
                 }
             }
         }
-        stage('Push Docker Image') {
+        stage('Push & Tag Docker Image') 
+        {
             steps {
                 sh 'docker tag frontend-image:${BUILD_NUMBER} lehardocker/frontend-image:${BUILD_NUMBER}'
                 sh 'docker push lehardocker/frontend-image:${BUILD_NUMBER}'
             }
         }
     }
-}
+ }
