@@ -109,10 +109,12 @@ pipeline {
                  sh ''' 
                     git config --global user.name  'sureshkumar-devops'
                     git config --global user.email 'suresh.ak47@gmail.com'
-                   echo BUILD_NUMBER=${BUILD_NUMBER}
-                    //echo BUILD_NUMBER$BUILD_NUMBER
-                    echo imageTag=$(grep -oP '(?<=frontend:)[^ ]+' deployment.yaml)
-                    //echo imageTag:$imageTag
+                    BUILD_NUMBER=${BUILD_NUMBER}
+                    echo $BUILD_NUMBER
+                    imageTag=$(grep -oP '(?<=frontend:)[^ ]+' deployment.yaml)
+                    echo $imageTag
+                    echo "############## Deploying new version of 3-tire app ##############"
+                    sh "sed -i 's/${imageTag}/${BUILD_NUMBER}/g' deployment.yaml"
                  '''
                 }
                }
