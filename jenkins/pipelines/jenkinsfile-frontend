@@ -89,7 +89,7 @@ pipeline
                     {
                        withDockerRegistry(credentialsId: 'docker-credentials', toolName: 'DOCKER_HOME') 
                        { 
-                            sh 'docker build -t frontend-image:latest  -f docker/dockerfiles/frontend/Dockerfile .'                            
+                            sh 'docker build -t frontend-image:${BUILD_NUMBER}  -f docker/dockerfiles/frontend/Dockerfile .'                            
                        }
                     }           
             }
