@@ -85,8 +85,6 @@ pipeline
         {
             steps
             {
-                dir('app/frontend')
-                {
                     script
                     {
                        withDockerRegistry(credentialsId: 'docker-credentials', toolName: 'DOCKER_HOME') 
@@ -95,16 +93,14 @@ pipeline
                             //sh 'docker tag lehardocker/frontend-image:v1 frontend-image:latest'
                             //sh 'docker push frontend-image:latest'
                        }
-                    }
-                }
+                    }           
             }
         }
         stage('Docker Tag & Pushing') 
         {
             steps
             {
-                dir('app/frontend')
-                {
+            
                    script 
                    {
                        withDockerRegistry(credentialsId: 'docker-credentials', toolName: 'DOCKER_HOME') 
@@ -113,9 +109,8 @@ pipeline
                             sh 'docker tag lehardocker/frontend-image:${BUILD_NUMBER} frontend-image:${BUILD_NUMBER}'
                             sh 'docker push frontend-image:${BUILD_NUMBER}'
                        } 
-                   }
-                }
-            }            
+                   }    
+            }
         }
 
     }
