@@ -103,7 +103,7 @@ pipeline {
             {
                dir('k8s/manifests/frontend/')
                {
-                withCredentials([string(credentialsId: 'githubtoken', variable: 'githubtoken')])
+                withCredentials([string(credentialsId: 'githubtoken', variable: 'GH_TOKEN')])
                 {
                  echo 'Update Deployment File'
                  sh ''' 
@@ -115,7 +115,9 @@ pipeline {
                     echo $imageTag
                     echo "############## Deploying new version of 3-tire app ##############"                    
                     sed -i 's/${imageTag}/${BUILD_NUMBER}/g' deployment.yaml
-                    echo sed -i 's/${imageTag}/${BUILD_NUMBER}/g' deployment.yaml
+                    git add deployment.yaml
+                    git commit -m "Update deployment Image to version \${BUILD_NUMBER}"
+                    git push https://${GH_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:master                    
                  '''
                 }
                }
