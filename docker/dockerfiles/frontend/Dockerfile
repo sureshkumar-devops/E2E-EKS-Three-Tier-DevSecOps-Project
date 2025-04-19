@@ -3,7 +3,9 @@ WORKDIR /app
 COPY /app/frontend/package*.json ./
 RUN npm install
 COPY /app/frontend/ ./
+ENV NODE_OPTIONS=--openssl-legacy-provider
 RUN npm run build
+
 
 FROM node:18-alpine3.18
 WORKDIR /app
