@@ -126,5 +126,12 @@ pipeline
                 }   
             }
         }
+        stage('Build Backend Job')
+        {
+            steps
+            {
+                build Job: "Three-Tier-BackEnd-Application"
+            }
+        }
     }
 }
