@@ -92,36 +92,41 @@ pipeline {
             git credentialsId: 'GitHub',url: 'https://github.com/sureshkumar-devops/E2E-EKS-Three-Tier-DevSecOps-Project.git'
           }
         }
-        stage('Update Deployment File')
+        stage('Update Deployment File') 
         {
-            environment
+            environment 
             {
                 GIT_REPO_NAME = 'E2E-EKS-Three-Tier-DevSecOps-Project'
                 GIT_USER_NAME = 'sureshkumar-devops'
             }
-            steps
+            steps 
             {
-               dir('k8s/manifests/frontend/')
-               {
-                withCredentials([string(credentialsId: 'githubtoken', variable: 'GH_TOKEN')])
+                dir('k8s/manifests/frontend/') 
                 {
-                 echo 'Update Deployment File'
-                 sh ''' 
-                    git config --global user.name  'sureshkumar-devops'
-                    git config --global user.email 'suresh.ak47@gmail.com'
-                    BUILD_NUMBER=${BUILD_NUMBER}
-                    echo $BUILD_NUMBER
-                    imageTag=$(grep -oP '(?<=frontend:)[^ ]+' deployment.yaml)
-                    echo $imageTag
-                    echo "############## Deploying new version of 3-tire app ##############"                    
-                    sed -i 's/${imageTag}/${BUILD_NUMBER}/g' deployment.yaml
-                    git add deployment.yaml
-                    git commit -m "Update deployment Image to version \${BUILD_NUMBER}"
-                    git push https://${GH_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:master                    
-                 '''
+                    withCredentials([string(credentialsId: 'githubtoken', variable: 'GH_TOKEN')]) 
+                    {
+                        echo 'Updating Deployment File'
+                         sh '''
+                            git config --global user.name 'sureshkumar-devops'
+                            git config --global user.email 'suresh.ak47@gmail.com'
+                            echo "Build Number: ${BUILD_NUMBER}"
+
+                            # Extract the current image tag from the deployment file
+                            imageTag=$(grep -oP '(?<=frontend:)[^ ]+' deployment.yaml)
+                            echo "Current Image Tag: $imageTag"
+                            
+                            echo "############## Deploying new version of 3-tier app ##############"
+                            # Replace the old image tag with the new build number
+                            sed -i "s/${imageTag}/${BUILD_NUMBER}/g" deployment.yaml
+
+                            # Commit and push the updated deployment file
+                            git add deployment.yaml
+                            git commit -m "Update deployment image to version ${BUILD_NUMBER}"
+                            git push https://${GH_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:master
+                    }   '''
+                    }   
                 }
-               }
             }
         }
-    }
- }
+  }
+}
