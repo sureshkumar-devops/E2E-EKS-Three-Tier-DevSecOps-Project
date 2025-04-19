@@ -1,12 +1,15 @@
 pipeline {
     agent any
-    triggers {
+    triggers 
+    {
         pollSCM '* * * * *'
     }
-    tools {
+    tools 
+    {
         jdk 'JAVA_HOME'
     }
-    environment {
+    environment 
+    {
         scanner_home = tool 'sonarqube-scanner'
     }
     stages
@@ -23,43 +26,59 @@ pipeline {
                 git branch: 'master',
                     url: 'https://github.com/sureshkumar-devops/E2E-EKS-Three-Tier-DevSecOps-Project.git'
             }
-        }
-        // Uncomment the following stages as needed
-        // stage('OWASP Check') {
-        //     steps {
-        //         dir('app/frontend') {
-        //             dependencyCheck additionalArguments: '--scan ./', odcInstallation: 'DPCHECK_HOME'
-        //             dependencyCheckPublisher pattern: '**/frontend-report.xml'
-        //         }
-        //     }
+        }        
+        // stage('OWASP Check') 
+        // {
+        //      steps 
+        //      {
+        //          dir('app/frontend') 
+        //          {
+        //              dependencyCheck additionalArguments: '--scan ./', odcInstallation: 'DPCHECK_HOME'
+        //              dependencyCheckPublisher pattern: '**/frontend-report.xml'
+        //          }
+        //      }
         // }
-        // stage('SonarQube Analysis') {
-        //     steps {
-        //         dir('app/frontend') {
-        //             withSonarQubeEnv('sonarqube-server') {
-        //                 sh ''' $scanner_home/bin/sonar-scanner \
-        //                     -Dsonar.ProjectName=frontend \
-        //                     -Dsonar.ProjectKey=frontend '''
-        //             }
-        //         }
-        //     }
+        // stage('SonarQube Analysis') 
+        // {
+        //      steps 
+        //      {
+        //          dir('app/frontend') 
+        //          {
+        //              withSonarQubeEnv('sonarqube-server') 
+        //              {
+        //                  sh ''' $scanner_home/bin/sonar-scanner \
+        //                      -Dsonar.ProjectName=frontend \
+        //                      -Dsonar.ProjectKey=frontend '''
+        //              }
+        //          }
+        //      }
         // }
-        // stage('QualityGates') {
-        //     steps {
-        //         dir('app/frontend') {
-        //             script {
-        //                 timeout(time: 1, unit: 'MINUTES') {
-        //                     waitForQualityGate abortPipeline: false
-        //                 }
-        //             }
-        //         }
-        //     }
+        // stage('QualityGates') 
+        // {
+        //      steps 
+        //      {
+        //          dir('app/frontend') 
+        //          {
+        //              script 
+        //              {
+        //                  timeout(time: 1, unit: 'MINUTES') 
+        //                  {
+        //                      waitForQualityGate abortPipeline: false
+        //                  }
+        //              }
+        //          }
+        //      }
         // }
         // stage('Trivy FS SCAN') 
         // {
-        //     steps {
-        //         dir('app/frontend') {
-
+        //      steps 
+        //      {
+        //          dir('app/frontend') 
+        //          {
+        //             sh 'trivy fs .'
+        //          }
+        //      }
+        // }
         stage('Build Docker Image ')
         {
             steps{
@@ -78,13 +97,13 @@ pipeline {
                 sh 'docker push lehardocker/frontend-image:${BUILD_NUMBER}'
             }
         }
-        stage('Trivy Image SCAN') 
-        {
-            steps 
-            {
-              sh 'trivy image lehardocker/frontend-image:${BUILD_NUMBER} > trivyimage-${BUILD_NUMBER}.txt'
-            }
-        }
+        // stage('Trivy Image SCAN') 
+        // {
+        //     steps 
+        //     {
+        //       sh 'trivy image lehardocker/frontend-image:${BUILD_NUMBER} > trivyimage-${BUILD_NUMBER}.txt'
+        //     }
+        // }
         stage('GitHub Login')
         {
           steps
@@ -122,11 +141,10 @@ pipeline {
                             # Commit and push the updated deployment file
                             git add deployment.yaml
                             git commit -m "Update deployment image to version ${BUILD_NUMBER}"
-                            git push https://${GH_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:master
-                    }   '''
+                            git push https://${GH_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:master'''
                     }   
                 }
             }
         }
-  }
+    }
 }
