@@ -114,7 +114,8 @@ pipeline {
                     imageTag=$(grep -oP '(?<=frontend:)[^ ]+' deployment.yaml)
                     echo $imageTag
                     echo "############## Deploying new version of 3-tire app ##############"
-                    sh "sed -i 's/${imageTag}/${BUILD_NUMBER}/g' deployment.yaml"
+                    //sed -i "s/${AWS_ECR_REPO_NAME}:${imageTag}/${AWS_ECR_REPO_NAME}:${BUILD_NUMBER}/" deployment.yaml
+                    sed -i 's/${imageTag}/${BUILD_NUMBER}/g' deployment.yaml
                  '''
                 }
                }
